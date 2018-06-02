@@ -7,7 +7,7 @@
 #include <sys/times.h>
 #include <zconf.h>
 
-const int buff_size = 1024;
+const int buff_size = 2000000;
 
 typedef struct transform_props {
   int begin;
@@ -23,10 +23,10 @@ typedef struct transform_props {
 void save_time_res(clock_t r_time[2], struct tms tms_time[2], int threads,
                    int width, int heigth, int filter_size);
 void *wrapped_apply(void *);
-void load_matrix(char *buff, int **out_matrix, FILE *fp, int height, int width);
+void load_matrix(char *buff, int **out_matrix, FILE *fp, int heigth, int width);
 void free_matrix(int width, int heigth, int **matrix);
 int **allocate_matrix(int width, int heigth);
-void load_matrix_(char *buff, double **out_matrix, FILE *fp, int height,
+void load_matrix_(char *buff, double **out_matrix, FILE *fp, int heigth,
                   int width);
 void free_matrix_(int width, int heigth, double **matrix);
 double **allocate_matrix_(int width, int heigth);
@@ -206,12 +206,14 @@ void load_matrix(char *buff, int **out_matrix, FILE *fp, int heigth,
                  int width) {
   int j = 0;
   int i = 0;
-  while (fgets(buff, buff_size, fp) != NULL) {
-    for (char *word = strtok(buff, " \n\t\r"); word != NULL;
-         word = strtok(NULL, " \t\n\r")) {
+  int br = 1;
+  while (fgets(buff, buff_size, fp) != NULL && br) {
+    for (char *word = strtok(buff, " \n\r"); word != NULL;
+         word = strtok(NULL, " \n\r")) {
       out_matrix[i][j] = strtol(word, NULL, 10);
       j++;
       i = (j < width) ? i : i + 1;
+        if(i == heigth) {br = 0;break;}
       j = (j < width) ? j : 0;
     }
   }
