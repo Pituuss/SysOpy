@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/times.h>
 #include <zconf.h>
+#include <unistd.h>
 
 const int buff_size = 2000000;
 
